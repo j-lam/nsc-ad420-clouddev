@@ -19,7 +19,7 @@ tags:
 schemes:
   - http
 paths:
-  /task:
+  /user/task:
     post:
       tags:
         - task
@@ -64,70 +64,7 @@ paths:
           description: Pet not found
         '405':
           description: Validation exception
-  /task/findByStatus:
-    get:
-      tags:
-        - task
-      summary: Finds Tasks by status
-      description: Multiple status values can be provided with comma separated strings
-      operationId: findTasksByStatus
-      produces:
-        - application/xml
-        - application/json
-      parameters:
-        - name: status
-          in: query
-          description: Status values that need to be considered for filter
-          required: true
-          type: array
-          items:
-            type: string
-            enum:
-              - available
-              - pending
-              - sold
-            default: available
-          collectionFormat: multi
-      responses:
-        '200':
-          description: successful operation
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/Task'
-        '400':
-          description: Invalid status value
-  /task/findByTags:
-    get:
-      tags:
-        - task
-      summary: Finds Tasks by tags
-      description: >-
-        Muliple tags can be provided with comma separated strings. Use        
-        tag1, tag2, tag3 for testing.
-      operationId: findTasksByTags
-      produces:
-        - application/xml
-        - application/json
-      parameters:
-        - name: tags
-          in: query
-          description: Tags to filter by
-          required: true
-          type: array
-          items:
-            type: string
-          collectionFormat: multi
-      responses:
-        '200':
-          description: successful operation
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/Task'
-        '400':
-          description: Invalid tag value
-  '/pet/{taskId}':
+  '/user/task/{taskId}':
     get:
       tags:
         - task
@@ -224,7 +161,7 @@ paths:
         - in: body
           name: body
           description: User object that needs to be added to the
-          required: true
+          required: false
           schema:
             $ref: '#/definitions/User'
       responses:
@@ -232,50 +169,6 @@ paths:
           description: OK
         '405':
           description: Invalid input
-  /user/createWithArray:
-    post:
-      tags:
-        - user
-      summary: Creates list of users with given input array
-      description: ''
-      operationId: createUsersWithArrayInput
-      produces:
-        - application/xml
-        - application/json
-      parameters:
-        - in: body
-          name: body
-          description: List of user object
-          required: true
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/User'
-      responses:
-        default:
-          description: successful operation
-  /user/createWithList:
-    post:
-      tags:
-        - user
-      summary: Creates list of users with given input array
-      description: ''
-      operationId: createUsersWithListInput
-      produces:
-        - application/xml
-        - application/json
-      parameters:
-        - in: body
-          name: body
-          description: List of user object
-          required: true
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/User'
-      responses:
-        default:
-          description: successful operation
   /user/login:
     get:
       tags:
@@ -327,7 +220,7 @@ paths:
       responses:
         default:
           description: successful operation
-  '/user/{username}':
+  '/user/{userId}':
     get:
       tags:
         - user
@@ -338,7 +231,7 @@ paths:
         - application/xml
         - application/json
       parameters:
-        - name: username
+        - name: userId
           in: path
           description: 'The name that needs to be fetched. Use user1 for testing. '
           required: true
@@ -362,7 +255,7 @@ paths:
         - application/xml
         - application/json
       parameters:
-        - name: username
+        - name: userId
           in: path
           description: name that need to be updated
           required: true
@@ -388,7 +281,7 @@ paths:
         - application/xml
         - application/json
       parameters:
-        - name: username
+        - name: userId
           in: path
           description: The name that needs to be deleted
           required: true
@@ -401,11 +294,17 @@ paths:
 definitions:
   User:
     type: object
+    required:
+      - userId
+      - firstName
+      - lastName
     properties:
-      id:
+      userId:
         type: integer
         format: int64
-      name:
+      firstName:
+        type: string
+      lastName:
         type: string
       tasks:
         type: array
@@ -413,9 +312,21 @@ definitions:
           $ref: '#/definitions/Task'
   Task:
     type: object
+    required:
+      - taskId
+      - taskName
     properties:
-      id:
+      taskId:
         type: integer
         format: int64
-      description:
+      taskName:
         type: string
+      taskCreateDate:
+        type: string
+        format: date
+      taskDueDate:
+        type: string
+        format: date
+      state:
+        type: string
+        example: 'New, In Progress, Blocked, Completed'
